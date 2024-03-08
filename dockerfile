@@ -1,5 +1,5 @@
 # docker build -t front-end-gilbi .
-FROM node:18-alpine
+FROM node:16-alpine
 #FROM node:alpine
 
 WORKDIR /app
