@@ -11,7 +11,7 @@ import ThemeComponent from 'src/@core/theme/ThemeComponent'
 import { SettingsConsumer, SettingsProvider } from 'src/@core/context/settingsContext'
 import { createEmotionCache } from 'src/@core/utils/create-emotion-cache'
 import 'react-perfect-scrollbar/dist/css/styles.css'
-//Se der erro na execução do baile do next, comente a importação abaixo
+//Se der erro na execução do builde do next, comente a importação abaixo
 import '../../styles/globals.css'
 
 type ExtendedAppProps = AppProps & {
