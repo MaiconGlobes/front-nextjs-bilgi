@@ -14,165 +14,162 @@ import FormUsers from '../form-layouts/FormUsers';
 import MuiAlert from '@mui/material/Alert';
 import AccountBox from 'mdi-material-ui/AccountBox';
 import TStateForm from 'src/@core/@types/state_forms';
+import axios from 'axios';
 
-interface FormUsersProps {
-  response: any;
-  dadosVazios: string;
+type FormUsersProps = {
+response: any;
+dadosVazios: string;
+fetchData: () => void;
 }
 
-const TableUsers: React.FC<FormUsersProps> = ({ response, dadosVazios}) => {
-  const [rows, setRows] = useState([]);
-  const [stateForm, setStateForm] = useState<TStateForm>('inserção');
-  const [registroAtual, setRegistroAtual] = useState<string>('');
-  const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
-  const [snackbarMessage, setSnackbarMessage] = useState<string>('');
-  const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
+const TableUsers: React.FC<FormUsersProps> = ({ response, dadosVazios, fetchData }) => {
+const [rows, setRows] = useState([]);
+const [stateForm, setStateForm] = useState<TStateForm>('inserção');
+const [registroAtual, setRegistroAtual] = useState<string>('');
+const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
+const [snackbarMessage, setSnackbarMessage] = useState<string>('');
+const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
 
-   useEffect(() => {
-      handleInsert(dadosVazios);
+useEffect(() => {
+	handleInsert(dadosVazios);
+	setRows(response?.retorno?.dados || []);
+}, [response, dadosVazios]);
 
-      const fetchData = async () => {
-         try {
-            setRows(response.retorno.dados);
-         
-         } catch (error) {
-            setSnackbarSeverity('error');
-            setSnackbarMessage('Erro genérico qualquer se aplica aqui');
-            setSnackbarOpen(true);
-         }
-      };
+const handleView = (linhaRegistro: any) => {
+	setStateForm('visualização');
+	setRegistroAtual(linhaRegistro);
+};
 
-    fetchData();
-  }, [response, dadosVazios, /*registroAtual*/]);
+const handleInsert = async (dadosVazios: any) => {
+	setStateForm('inserção');
+	setRegistroAtual(dadosVazios);
+};
 
-  const handleView = (linhaRegistro: any) => {
-    setStateForm('visualização');
-    setRegistroAtual(linhaRegistro);
-  };
+const handleEdit = (linhaRegistro: any) => {
+	setStateForm('edição');
+	setRegistroAtual(linhaRegistro);
+};
 
-  const handleInsert = (dadosVazios: any) => {
-    setStateForm('inserção');
-    setRegistroAtual(dadosVazios);
-  };
+const handleDelete = async (linhaRegistro: any) => {
+		setStateForm('deleção');
+		setRegistroAtual(linhaRegistro);
+};
 
-   const handleEdit = (linhaRegistro: any) => {
-      setStateForm('edição');
-      setRegistroAtual(linhaRegistro);
-   };
+const handleSave = (dadosRequest: any) => {
+	const updatedRows = rows.map((row: any) => {
+		if (row.id === dadosRequest.usuario.id) {
+			return dadosRequest.usuario;
+		}
 
-   const handleDelete = (linhaRegistro: any) => {
-      setStateForm('deleção');
-      setRegistroAtual(linhaRegistro);
-   };
+		return row;
+	});
 
-   const handleSave = (dadosRequest: any) => {
-      const updatedRows = rows.map((row: any) => {
-         if (row.id === dadosRequest.usuario.id) {
-            return dadosRequest.usuario;
-         }
+	setRows(updatedRows as any);
+	setRegistroAtual('');
+	fetchData(); 
+};
 
-         return row;
-      });
+const handleClose = () => {
+	setRegistroAtual('');
+};
 
-      setRows(updatedRows as any);
-      setRegistroAtual('');
-      setSnackbarSeverity('success');
-      setSnackbarMessage('Sucesso na operação!');
-      setSnackbarOpen(true);
-   };
+const handleCloseSnackbar = () => {
+	setSnackbarOpen(false);
+};
 
-  const handleClose = () => {
-    setRegistroAtual('');
-  };
+return (
+	<TableContainer component={Paper}>
+		<Table sx={{ minWidth: 650 }} aria-label=''>
+			<TableHead>
+			<TableRow>
+				<TableCell>Nome do usuário</TableCell>
+				<TableCell align='left'>Email</TableCell>
+				<TableCell align='left'>Município</TableCell>
+				<TableCell align='right'>Estado (UF)</TableCell>
+				<TableCell align='center'>CEP</TableCell>
+				<TableCell align='right' component={()=>(
+					<Button sx={{marginLeft: '1rem', marginTop: '1.2rem', width: '80%', fontSize: '0.8rem'}}
+						onClick={handleInsert} 
+						variant='contained' 
+						size='small' 
+						color='primary'
+					>
+					+ Usuário
+					</Button>
+				)}>CEP</TableCell>
+			</TableRow>
+			</TableHead>
+			<TableBody>
+			{rows.map((row: any) => (
+				<TableRow key={row.id}>
+					<TableCell component='th' scope='row'>
+					{row.nome}
+					</TableCell>
+					<TableCell align='left'>{row.email}</TableCell>
+					<TableCell align='left'>{row.municipio}</TableCell>
+					<TableCell align='right'>{row.uf}</TableCell>
+					<TableCell align='center'>{row.cep}</TableCell>
+					<TableCell align='right'>
+					<IconButton color='inherit' aria-haspopup='true' onClick={() => handleView(row)} aria-controls='customized-menu'>
+						<AccountBox color='action' />
+					</IconButton>
+					<IconButton color='inherit' aria-haspopup='true' onClick={() => handleEdit(row)} aria-controls='customized-menu'>
+						<TextAccount color='info' />
+					</IconButton>
+					<IconButton color='inherit' aria-haspopup='true' onClick={() => handleDelete(row)} aria-controls='customized-menu'>
+						<DeleteIcon color='error' />
+					</IconButton>
+					</TableCell>
+				</TableRow>
+			))}
+			</TableBody>
+		</Table>
 
-  const handleCloseSnackbar = () => {
-    setSnackbarOpen(false);
-  };
+		<Snackbar
+			anchorOrigin={{
+			vertical: 'top',
+			horizontal: 'right',
+			}}
+			open={snackbarOpen}
+			autoHideDuration={4200}
+			onClose={handleCloseSnackbar}
+		>
+			<MuiAlert
+			elevation={6}
+			variant="filled"
+			onClose={handleCloseSnackbar}
+			severity={snackbarSeverity}
+			>
+			{snackbarMessage}
+			</MuiAlert>
+		</Snackbar>
 
-  return (
-   <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label=''>
-        <TableHead>
-          <TableRow>
-            <TableCell>Nome do usuário</TableCell>
-            <TableCell align='left'>Email</TableCell>
-            <TableCell align='left'>Município</TableCell>
-            <TableCell align='right'>Estado (UF)</TableCell>
-            <TableCell align='center'>CEP</TableCell>
-            <TableCell align='right' component={()=>(
-               <Button sx={{marginLeft: '1rem', marginTop: '1.2rem', width: '80%', fontSize: '0.8rem'}}
-                  onClick={handleInsert} 
-                  variant='contained' 
-                  size='small' 
-                  color='primary'
-               >
-               + Usuário
-               </Button>
-            )}>CEP</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((row: any) => (
-            <TableRow key={row.id}>
-              <TableCell component='th' scope='row'>
-                {row.nome}
-              </TableCell>
-              <TableCell align='left'>{row.email}</TableCell>
-              <TableCell align='left'>{row.municipio}</TableCell>
-              <TableCell align='right'>{row.uf}</TableCell>
-              <TableCell align='center'>{row.cep}</TableCell>
-              <TableCell align='right'>
-                <IconButton color='inherit' aria-haspopup='true' onClick={() => handleView(row)} aria-controls='customized-menu'>
-                  <AccountBox color='action' />
-                </IconButton>
-                <IconButton color='inherit' aria-haspopup='true' onClick={() => handleEdit(row)} aria-controls='customized-menu'>
-                  <TextAccount color='info' />
-                </IconButton>
-                <IconButton color='inherit' aria-haspopup='true' onClick={() => handleDelete(row)} aria-controls='customized-menu'>
-                  <DeleteIcon color='error' />
-                </IconButton>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+		<Dialog
+			open={Boolean(registroAtual)}
+			onClose={handleClose}
+			disableEscapeKeyDown
+			maxWidth="lg"
+		>
+			<DialogTitle>Usuarios</DialogTitle>
+			<DialogContent>
+			<FormUsers
+				statesForm={stateForm}
+				dataRegister={registroAtual}
+				onSave={handleSave}
+				onClose={handleClose}
+				snackbarOpen={snackbarOpen}
+				setSnackbarOpen={setSnackbarOpen}
+				snackbarMessage={snackbarMessage}
+				setSnackbarMessage={setSnackbarMessage}
+				snackbarSeverity={snackbarSeverity}
+				setSnackbarSeverity={setSnackbarSeverity}
+			/>
 
-      <Snackbar
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
-        }}
-        open={snackbarOpen}
-        autoHideDuration={4200}
-        onClose={handleCloseSnackbar}
-      >
-        <MuiAlert
-          onClose={handleCloseSnackbar}
-          severity={snackbarSeverity}
-          sx={{ width: '100%', marginTop: '15%' }}
-        >
-          {snackbarMessage}
-        </MuiAlert>
-      </Snackbar>
 
-      <Dialog
-        open={Boolean(registroAtual)}
-        onClose={handleClose}
-        disableEscapeKeyDown
-        maxWidth="lg"
-      >
-        <DialogTitle>Usuarios</DialogTitle>
-        <DialogContent>
-          <FormUsers
-            statesForm={stateForm}
-            dataRegister={registroAtual}
-            onSave={handleSave}
-            onClose={handleClose}
-          />
-        </DialogContent>
-      </Dialog>
-   </TableContainer>
-  );
+			</DialogContent>
+		</Dialog>
+	</TableContainer>
+	);
 };
 
 export default TableUsers;
