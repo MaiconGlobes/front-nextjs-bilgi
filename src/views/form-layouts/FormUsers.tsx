@@ -169,15 +169,19 @@ const FormUsers: React.FC<FormUsersProps> = ({ statesForm, dataRegister, onSave,
 			if (statesForm === 'inserção') {
 				await axios
 					.post(`${base_url}/usuario/cadastrar-usuario`, dadosRequest)
-					.then(() => {
-						setSnackbarSeverity('success');
-						setSnackbarMessage('Usuário cadastrado com sucesso!');
-						setSnackbarOpen(true);
-						onSave(dadosRequest as TUsuario);
+					.then((response) => {
+						if (response.status === 201) {
+							setSnackbarSeverity('success');
+							setSnackbarMessage('Usuário cadastrado com sucesso!');
+							setSnackbarOpen(true);
+							onSave(dadosRequest as TUsuario);
+						} else{
+							throw new Error(response.data.retorno.status);
+						}
 				})
 				.catch((error) => {
 						setSnackbarSeverity('error');
-						setSnackbarMessage('Erro ao cadastrar usuário');
+						setSnackbarMessage(error?.response?.data?.retorno?.mensagens?.status ? error.response.data.retorno.mensagens.status : 'Erro ao cadastrar usuário');
 						setSnackbarOpen(true);
 
 						if (axios.isAxiosError(error)) {
@@ -210,7 +214,29 @@ const FormUsers: React.FC<FormUsersProps> = ({ statesForm, dataRegister, onSave,
 							console.error(error);
 						}
 					});
-			} 
+			} else if (statesForm === 'deleção') {
+				await axios
+					.delete(`${process.env.NEXT_PUBLIC_BASE_URL}/usuario/deletar-usuario?id=${dataRegister.id}`)
+					.then(() => {
+						setSnackbarSeverity('success');
+						setSnackbarMessage('Usuário deletado com sucesso!');
+						setSnackbarOpen(true);
+						onSave(dadosRequest as TUsuario);
+					})
+					.catch((error) => {
+						setSnackbarSeverity('error');
+						setSnackbarMessage('Erro ao deletar usuário');
+						setSnackbarOpen(true);
+
+						if (axios.isAxiosError(error)) {
+							if (error.response) {
+								console.error(error.response.data.retorno.mensagens);
+							}
+						} else {
+							console.error(error);
+						}
+					});
+			}  
 		} catch (error) {
 			if (error instanceof yup.ValidationError) {
 				error.inner.forEach((e) => {
