@@ -52,6 +52,9 @@ const TableUsers: React.FC<FormUsersProps> = ({ response, dadosVazios, fetchData
 
   const handleDelete = async (linhaRegistro: any) => {
     try {
+		setStateForm('deleção');
+    	setRegistroAtual(linhaRegistro);
+		
       await axios.delete(`http://localhost:3005/v1/api/usuario/deletar-usuario?id=${linhaRegistro.id}`);
       setSnackbarSeverity('success');
       setSnackbarMessage('Usuário deletado com sucesso!');
@@ -76,9 +79,9 @@ const TableUsers: React.FC<FormUsersProps> = ({ response, dadosVazios, fetchData
 
       setRows(updatedRows as any);
       setRegistroAtual('');
-      setSnackbarSeverity('success');
-      setSnackbarMessage('Sucesso na operação!');
-      setSnackbarOpen(true);
+      // setSnackbarSeverity('success');
+      // setSnackbarMessage('Sucesso na operação!');
+      // setSnackbarOpen(true);
       fetchData(); 
    };
 
@@ -165,12 +168,20 @@ const TableUsers: React.FC<FormUsersProps> = ({ response, dadosVazios, fetchData
        >
          <DialogTitle>Usuarios</DialogTitle>
          <DialogContent>
-           <FormUsers
-             statesForm={stateForm}
-             dataRegister={registroAtual}
-             onSave={handleSave}
-             onClose={handleClose}
-           />
+			<FormUsers
+				statesForm={stateForm}
+				dataRegister={registroAtual}
+				onSave={handleSave}
+				onClose={handleClose}
+				snackbarOpen={snackbarOpen}
+				setSnackbarOpen={setSnackbarOpen}
+				snackbarMessage={snackbarMessage}
+				setSnackbarMessage={setSnackbarMessage}
+				snackbarSeverity={snackbarSeverity}
+				setSnackbarSeverity={setSnackbarSeverity}
+			/>
+
+
          </DialogContent>
        </Dialog>
     </TableContainer>

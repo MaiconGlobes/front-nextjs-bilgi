@@ -54,13 +54,20 @@ import TStateForm from 'src/@core/@types/state_forms';
 
 	interface FormUsersProps {
 		statesForm: TStateForm;
-		dataRegister: any; 
-		onSave: (dados: TUsuario) => void;
+		dataRegister: any;
+		onSave: (dadosRequest: any) => void;
 		onClose: () => void;
+		snackbarOpen: boolean;
+		setSnackbarOpen: (isOpen: boolean) => void;
+		snackbarMessage: string;
+		setSnackbarMessage: (message: string) => void;
+		snackbarSeverity: 'success' | 'error';
+		setSnackbarSeverity: (severity: 'success' | 'error') => void;
 	}
+	 
+	 
 
-const FormUsers: React.FC<FormUsersProps> = ({ statesForm, dataRegister, onSave, onClose }) => {
-
+const FormUsers: React.FC<FormUsersProps> = ({ statesForm, dataRegister, onSave, onClose, snackbarOpen, setSnackbarOpen, snackbarMessage, setSnackbarMessage, snackbarSeverity, setSnackbarSeverity }) => {
 	//Separar as funções em utils
 	const formatDateForInput = (dateString: string) => {
 		
@@ -163,9 +170,16 @@ const FormUsers: React.FC<FormUsersProps> = ({ statesForm, dataRegister, onSave,
 				await axios
 					.post(`${base_url}/usuario/cadastrar-usuario`, dadosRequest)
 					.then(() => {
-					onSave(dadosRequest as TUsuario);
+						setSnackbarSeverity('success');
+						setSnackbarMessage('Usuário cadastrado com sucesso!');
+						setSnackbarOpen(true);
+						onSave(dadosRequest as TUsuario);
 				})
 				.catch((error) => {
+						setSnackbarSeverity('error');
+						setSnackbarMessage('Erro ao cadastrar usuário');
+						setSnackbarOpen(true);
+
 						if (axios.isAxiosError(error)) {
 							if (error.response) {
 							console.error(error.response.data.retorno.mensagens);
@@ -178,9 +192,16 @@ const FormUsers: React.FC<FormUsersProps> = ({ statesForm, dataRegister, onSave,
 				await axios
 					.put(`${base_url}/usuario/editar-usuario`, dadosRequest)
 					.then(() => {
+						setSnackbarSeverity('success');
+						setSnackbarMessage('Usuário atualizado com sucesso!');
+						setSnackbarOpen(true);
 						onSave(dadosRequest as TUsuario);
 					})
 					.catch((error) => {
+						setSnackbarSeverity('error');
+						setSnackbarMessage('Erro ao atualizar usuário');
+						setSnackbarOpen(true);
+
 						if (axios.isAxiosError(error)) {
 							if (error.response) {
 								console.error(error.response.data.retorno.mensagens);
@@ -358,60 +379,58 @@ const FormUsers: React.FC<FormUsersProps> = ({ statesForm, dataRegister, onSave,
 							/>
 							</Grid>
 							<Grid item xs={12} sm={6}>
-							<TextField
-								disabled={statesForm === 'visualização'}
-								fullWidth
-								label='Senha'
-								placeholder='Sua senha'
-								value={values.senha}
-								onChange={handlePasswordChange('senha')}
-								type={values.mostrarSenha ? 'text' : 'password'}
-								error={!!values.senhaErro}
-								helperText={values.senhaErro}
-								InputProps={{
-									endAdornment: (
-									<InputAdornment position='end'>
-										<IconButton
-											disabled={statesForm === 'visualização'}
-											edge='end'
-											onClick={handleClickShowPassword}
-											onMouseDown={handleMouseDownPassword}
-											aria-label='toggle password visibility'
-										>
-											{values.mostrarSenha ? <EyeOutline /> : <EyeOffOutline />}
-										</IconButton>
-									</InputAdornment>
-									),
-								}}
-							/>
+							{(statesForm === 'inserção' || statesForm === 'edição') && (
+									<TextField
+										fullWidth
+										label='Senha'
+										placeholder='Sua senha'
+										value={values.senha}
+										onChange={handlePasswordChange('senha')}
+										type={values.mostrarSenha ? 'text' : 'password'}
+										error={!!values.senhaErro}
+										helperText={values.senhaErro}
+										InputProps={{
+											endAdornment: (
+											<InputAdornment position='end'>
+												<IconButton
+													edge='end'
+													onClick={handleClickShowPassword}
+													onMouseDown={handleMouseDownPassword}
+													aria-label='toggle password visibility'
+												>
+													{values.mostrarSenha ? <EyeOutline /> : <EyeOffOutline />}
+												</IconButton>
+											</InputAdornment>
+											),
+										}}
+									/>)}
 							</Grid>
 							<Grid item xs={12} sm={6}>
-							<TextField
-								disabled={statesForm === 'visualização'}
-								fullWidth
-								label='Confirmar senha'
-								placeholder='Confirme sua senha'
-								value={values.confirmarSenha}
-								onChange={handleConfirmChange('confirmarSenha')}
-								type={values.mostrarSenha2 ? 'text' : 'password'}
-								error={!!values.confirmarSenhaErro}
-								helperText={values.confirmarSenhaErro}
-								InputProps={{
-									endAdornment: (
-									<InputAdornment position='end'>
-										<IconButton
-											disabled={statesForm === 'visualização'}
-											edge='end'
-											onClick={handleClickShowConfirmPassword}
-											onMouseDown={handleMouseDownConfirmPassword}
-											aria-label='toggle password visibility'
-										>
-											{values.mostrarSenha2 ? <EyeOutline /> : <EyeOffOutline />}
-										</IconButton>
-									</InputAdornment>
-									),
-								}}
-							/>
+							{(statesForm === 'inserção' || statesForm === 'edição') && (
+								<TextField
+									fullWidth
+									label='Confirmar senha'
+									placeholder='Confirme sua senha'
+									value={values.confirmarSenha}
+									onChange={handleConfirmChange('confirmarSenha')}
+									type={values.mostrarSenha2 ? 'text' : 'password'}
+									error={!!values.confirmarSenhaErro}
+									helperText={values.confirmarSenhaErro}
+									InputProps={{
+										endAdornment: (
+										<InputAdornment position='end'>
+											<IconButton
+												edge='end'
+												onClick={handleClickShowConfirmPassword}
+												onMouseDown={handleMouseDownConfirmPassword}
+												aria-label='toggle password visibility'
+											>
+												{values.mostrarSenha2 ? <EyeOutline /> : <EyeOffOutline />}
+											</IconButton>
+										</InputAdornment>
+										),
+									}}
+								/>)}
 							</Grid>
 							<Grid item xs={12}>
 							<Divider sx={{ marginBottom: 0 }} />
