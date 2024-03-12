@@ -30,6 +30,5 @@ yarn dev
 
 ```
 ## Importante 🌍
-Ao longo das alterações, alguns bugs se apresentaram, como a inserçao do registro e o mesmo não aparecer na lsiagem e sim, somente a ops atualzia 
-a página (o que nçao deve a contecer devido o react corrigir isso), assim como na deleção do registro.
-Os avisos de erros retornados da API não foram implementados de momento, mas é possível ver os mesmos pelo console.log().
+Para conexão com API é necessário configurar o .env.local com o IP do servidor e rodar novamente yarn/npm rum builde e start.
+
