@@ -189,23 +189,7 @@ const FormUsers: React.FC<FormUsersProps> = ({ statesForm, dataRegister, onSave,
 							console.error(error);
 						}
 					});
-			} else  {
-				await axios
-					.delete(`${base_url}/usuario/deletar-usuario?id=${dadosRequest.usuario.id}`)
-					.then(() => {
-						onSave(dadosRequest as TUsuario);
-					})
-					.catch((error) => {
-						if (axios.isAxiosError(error)) {
-							if (error.response) {
-								console.error(error.response.data.retorno.mensagens);
-							}
-						} else {
-							console.error(error);
-						}
-					});
-			}
-
+			} 
 		} catch (error) {
 			if (error instanceof yup.ValidationError) {
 				error.inner.forEach((e) => {

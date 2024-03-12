@@ -11,7 +11,6 @@ import ThemeComponent from 'src/@core/theme/ThemeComponent'
 import { SettingsConsumer, SettingsProvider } from 'src/@core/context/settingsContext'
 import { createEmotionCache } from 'src/@core/utils/create-emotion-cache'
 import 'react-perfect-scrollbar/dist/css/styles.css'
-//Se der erro na execução do builde do next, comente a importação abaixo
 import '../../styles/globals.css'
 
 type ExtendedAppProps = AppProps & {
@@ -38,7 +37,6 @@ const App = (props: ExtendedAppProps) => {
   const getLayout = Component.getLayout ?? (page => <UserLayout>{page}</UserLayout>)
 
   return (
-    //Generico
     <CacheProvider value={emotionCache}>
       <Head>
         <title>{`${themeConfig.templateName} - Lorem Impsum Lorem Impsum`}</title>
