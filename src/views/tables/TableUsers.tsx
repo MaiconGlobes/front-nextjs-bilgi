@@ -55,7 +55,7 @@ const TableUsers: React.FC<FormUsersProps> = ({ response, dadosVazios, fetchData
 		setStateForm('deleção');
     	setRegistroAtual(linhaRegistro);
 		
-      await axios.delete(`http://localhost:3005/v1/api/usuario/deletar-usuario?id=${linhaRegistro.id}`);
+      await axios.delete(`${process.env.NEXT_PUBLIC_BASE_URL}/usuario/deletar-usuario?id=${linhaRegistro.id}`);
       setSnackbarSeverity('success');
       setSnackbarMessage('Usuário deletado com sucesso!');
       setSnackbarOpen(true);

@@ -164,7 +164,7 @@ const FormUsers: React.FC<FormUsersProps> = ({ statesForm, dataRegister, onSave,
 				 }));
 			} 
 
-			const base_url = 'http://localhost:3005/v1/api'; 
+			const base_url = `${process.env.NEXT_PUBLIC_BASE_URL}`; 
 
 			if (statesForm === 'inserção') {
 				await axios
