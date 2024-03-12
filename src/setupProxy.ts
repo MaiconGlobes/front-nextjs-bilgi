@@ -4,7 +4,7 @@ export default function setupProxy(app: any) {
   app.use(
     '/api',
     createProxyMiddleware({
-      target: 'http://localhost:3005',
+      target: process.env.NEXT_PUBLIC_BASE_URL,
       changeOrigin: true,
     })
   );
